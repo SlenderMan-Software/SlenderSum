@@ -1,0 +1,5 @@
+langchain_text_splitters
+langchain_core
+flask
+pysqlite3-binary
+langchain_chroma
