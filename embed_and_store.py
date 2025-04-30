@@ -17,3 +17,4 @@ vector_store = Chroma(
 
 def add_documents(documents):
     return vector_store.add_documents(documents=documents)
+

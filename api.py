@@ -18,7 +18,12 @@ def handle_upload():
     
     splits = split_text(text, user_id, doc_id, notebook_id)
     embedding_ids = add_documents(splits)
-    return { "embedding_ids": embedding_ids }
+
+    new_splits = []
+    for split in splits:
+        new_splits.append(split.page_content)
+    
+    return {"splits": new_splits}
 
 
 if __name__ == '__main__':
