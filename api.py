@@ -2,6 +2,7 @@ import random
 from flask import Flask, request
 from split import split_text
 from embed_and_store import add_documents
+from summarize import summarize
 
 app = Flask(__name__)
 
@@ -12,13 +13,18 @@ def handle_upload():
     notebook_id = body.get('notebook_id')
     doc_id = body.get('doc_id')
     text = body.get('text')
+    
 
     if not user_id or not notebook_id or not doc_id or not text:
         return { "error": 'Bad request' }, 400
-    
+    summary = summarize(text)
     splits = split_text(text, user_id, doc_id, notebook_id)
     embedding_ids = add_documents(splits)
-    return { "embedding_ids": embedding_ids }
+    return {"summary": summary }, 200
+    
+#@app.route('/summarize', methods=['POST'])
+ #   def write_this_soon(text):
+  #  summary = summarize("This is a test")
 
 
 if __name__ == '__main__':
