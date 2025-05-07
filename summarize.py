@@ -30,7 +30,7 @@ For Mr. Mendoza, education wasn’t about nurturing — it was about hardening. 
 """
 def summarize(source):
    
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-pro")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
     messages = [
         ("system", "Summarize the following text in a few sentences. Make it easy to understand."),
         ("human", source ),
@@ -38,5 +38,5 @@ def summarize(source):
     response = llm.invoke(messages)
     return response.content
 
-#print(summarize(test_text)) 
+print(summarize(test_text)) 
 
