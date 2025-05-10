@@ -1,3 +1,4 @@
+import os
 import random
 from flask import Flask, request
 from split import split_text
@@ -28,5 +29,8 @@ def handle_upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if os.environ.get('FLASK_ENV') == 'production':
+        print('Flask app ready for WSGI server in production')
+    else:
+        app.run(debug=True)
 
