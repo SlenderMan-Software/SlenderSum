@@ -17,10 +17,15 @@ def handle_upload():
 
     if not user_id or not notebook_id or not doc_id or not text:
         return { "error": 'Bad request' }, 400
-    summary = summarize(text)
+    summary, key_topics, title = summarize(text)
     splits = split_text(text, user_id, doc_id, notebook_id)
     embedding_ids = add_documents(splits)
-    return {"summary": summary }, 200
+    
+    return {
+        "summary": summary,
+        "topics": key_topics,
+        "title": title
+    }, 200
     
 #@app.route('/summarize', methods=['POST'])
  #   def write_this_soon(text):

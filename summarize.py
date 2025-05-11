@@ -1,6 +1,14 @@
 from dotenv import load_dotenv
+import re
 from langchain_google_genai import ChatGoogleGenerativeAI
 load_dotenv()
+import json
+
+def clean_json_output(raw_response):
+    # Strip markdown code fences (e.g., ```json ... ```)
+    cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw_response.strip(), flags=re.DOTALL)
+    return cleaned.strip()
+
 
 test_text = """
 Mr. Mendoza was a man whose presence alone was enough to send chills down the spines of his students. His bald head gleamed under the fluorescent lights of the classroom, a reflection that seemed to mirror the cold, unforgiving nature of his teaching methods. Every step he took echoed with authority, his polished shoes clicking against the tile floor like a metronome of doom. His gaze, sharp and piercing, seemed to penetrate straight into the souls of those unfortunate enough to cross him.
@@ -29,14 +37,55 @@ For Mr. Mendoza, education wasn’t about nurturing — it was about hardening. 
 
 """
 def summarize(source):
-   
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
-    messages = [
-        ("system", "Summarize the following text in a few sentences. Make it easy to understand."),
-        ("human", source ),
-        ]
-    response = llm.invoke(messages)
-    return response.content
+   #If you want to use the Gemini 2.0 model, uncomment the line below and comment out the one below it. Beware, it is slow albiet more cost effective.
+   # llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+    prompt = [
+        ("system", 
+         """
+         You are an AI summarizer. Your task is to analyze a block of text and return a structured JSON object.
+You are a JSON-only summarizer.
 
-print(summarize(test_text)) 
+Strictly return ONLY a JSON object in this format and nothing else:
+
+{
+  "summary": "Your summary here.",
+  "key_topics": ["Topic A", "Topic B", "etc."],
+  "title": "Your title here"
+}
+
+Rules:
+- Do not include any introductory or explanatory text.
+- DO NOT use markdown or any other formatting!!!!! 
+- Ensure the JSON is syntactically valid (can be parsed by json.loads in Python).
+- Each topic in 'key_topics' should be a short phrase or keyword.
+- DO NOT explain anything.
+- DO NOT include markdown, commentary, or bullet points outside the JSON.
+- DO NOT write 'Here is the summary:' or anything before/after the JSON.
+- DO NOT use triple backticks or markdown code blocks.
+-GIVE RAW, UNFORMATTED JSON ONLY.
+
+         
+         """
+         ),
+        ("human", source)
+    ]
+    response = llm.invoke(prompt)
+    try:
+        raw = response.content
+        cleaned = clean_json_output(raw)
+        parsed = json.loads(cleaned)
+        summary = parsed.get("summary")
+        key_topics = parsed.get("key_topics", [])
+        title = parsed.get("title")
+        #return parsed["summary"], parsed["key_topics"], parsed["title"]
+        return summary, key_topics, title
+    except json.JSONDecodeError:
+        print("❌ JSON decode error. Raw output was:")
+        print(response.content)
+        return None, [], None
+
+    
+#For testing purposes:
+#print(summarize(test_text)) 
 

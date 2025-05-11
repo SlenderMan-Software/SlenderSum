@@ -25,13 +25,17 @@ But that brilliance came at a cost. It was as though Mr. Mendoza believed that t
 And so, year after year, students would enter his classroom with a mix of dread and curiosity. They had heard the stories, the whispered warnings passed down like ancient lore. They knew what awaited them, but they also knew that surviving Mr. Mendoza’s class meant emerging stronger, smarter, and perhaps a little more scarred. 
 
 For Mr. Mendoza, education wasn’t about nurturing — it was about hardening. And while his methods were cruel, there was no denying that those who endured them came out the other side forever changed."""
+shorter_text = """Mr. Mendoza was a man whose presence alone was enough to send chills down the spines of his students. His bald head gleamed under the fluorescent lights of the classroom, a reflection that seemed to mirror the cold, unforgiving nature of his teaching methods. Every step he took echoed with authority, his polished shoes clicking against the tile floor like a metronome of doom. His gaze, sharp and piercing, seemed to penetrate straight into the souls of those unfortunate enough to cross him.
 
+Rumors circulated through the hallways that Mr. Mendoza hadn’t always been this way. Some said he had once been a passionate, inspiring teacher who genuinely cared about his students. But something had changed. Whether it was years of dealing with ungrateful teenagers, the stress of the school system, or perhaps some deeper, unspoken darkness, no one knew for sure. What was certain, however, was that the Mr. Mendoza who now stood before his classes was a far cry from the teacher he once was.
+
+He ruled his classroom with an iron fist, his approach to discipline bordering on sadistic."""
 
 base_url = "http://127.0.0.1:5000" 
 path = "/new"
 url = base_url + path
 
-data = { "text": test_text, "doc_id": "892", "user_id": "steve", "notebook_id": "123" }
+data = { "text": shorter_text, "doc_id": "892", "user_id": "steve", "notebook_id": "123" }
 headers = {"Content-Type": "application/json"}
 
 response = requests.post(url, data=json.dumps(data), headers=headers)
