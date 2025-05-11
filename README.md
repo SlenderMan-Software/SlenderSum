@@ -18,7 +18,7 @@ This project is a text embedding and storage system that processes text document
 - **`split.py`**: Contains the logic for splitting text into smaller chunks.
 - **`text_split.py`**: A script for testing text splitting and embedding functionality.
 - **`post.py`**: A script for testing the API by sending a sample document.
--**`summarize.py`**: Contains function for sending summary request to Gemini
+- **`summarize.py`**: Contains function for sending summary, title, and key-topics request to Gemini, parses them for API.
 
 
 ## Setup
