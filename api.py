@@ -3,6 +3,7 @@ from flask import Flask, request
 from split import split_text
 from embed_and_store import add_documents
 from summarize import summarize
+import os
 
 app = Flask(__name__)
 
@@ -33,5 +34,8 @@ def handle_upload():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+     if os.environ.get('FLASK_ENV') == 'production':
+        print('Flask app ready for WSGI server in production')
+     else:
+        app.run(debug=True)
 
