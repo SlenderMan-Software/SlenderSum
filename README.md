@@ -62,10 +62,8 @@ Send a POST request to the /new endpoint of the API with the following metadata:
 
 - A successfull response will look something like this:
 ```
-{
-  Request successful!
-{'summary': "summary"}
-}
+Request successful!
+{'summary': 'summary', 'title': 'title', 'topics': [topic_A, topic_b, etc]}
 ```
 
 - If you don't include one of the parameters in your json payload you will get an error like this:
