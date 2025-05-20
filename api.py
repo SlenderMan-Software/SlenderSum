@@ -2,7 +2,7 @@ import random
 from flask import Flask, request
 from split import split_text
 from embed_and_store import add_documents
-from summarize import summarize
+from summarize import summarize, metasum
 from manage_documents import delete_docs, list_docs
 import os
 
@@ -52,6 +52,20 @@ def delete_chunks_by_doc_id():
         return { "error": 'Bad request' }, 400
     
     return { "success": delete_docs(doc_id) }
+
+@app.route('/sum', methods=['POST'])
+def handle_reupload():
+    body = request.get_json()
+    summaries = body.get('summaries')
+    
+
+    if not summaries:
+        return { "error": 'Bad request' }, 400
+
+    metasummary = metasum(summaries)
+
+    return metasummary, 200
+
 
 
 if __name__ == '__main__':
