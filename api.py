@@ -3,6 +3,7 @@ from flask import Flask, request
 from split import split_text
 from embed_and_store import add_documents
 from summarize import summarize
+from manage_documents import delete_docs, list_docs
 import os
 
 app = Flask(__name__)
@@ -31,6 +32,26 @@ def handle_upload():
 #@app.route('/summarize', methods=['POST'])
  #   def write_this_soon(text):
   #  summary = summarize("This is a test")
+
+@app.route('/list-docs', methods=['POST'])
+def get_chunk_ids():
+    body = request.get_json()
+    doc_id = body.get('doc_id')
+
+    if not doc_id:
+        return { "error": 'Bad request' }, 400
+    
+    return { "ids": list_docs(doc_id) }
+
+@app.route('/delete', methods=['POST'])
+def delete_chunks_by_doc_id():
+    body = request.get_json()
+    doc_id = body.get('doc_id')
+
+    if not doc_id:
+        return { "error": 'Bad request' }, 400
+    
+    return { "success": delete_docs(doc_id) }
 
 
 if __name__ == '__main__':
