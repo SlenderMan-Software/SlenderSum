@@ -1,4 +1,6 @@
-# Text Embedding and Storage System
+![Alt text](logo.png)
+
+# SlenderSum, text embedder and summarizer API
 
 This project is a text embedding and storage system that processes text documents, splits them into smaller chunks, generates embeddings for each chunk, and stores them in a vector database. It also includes an API for uploading and processing new documents. It also uses Gemini to summarize your upload.
 
@@ -43,12 +45,13 @@ This project is a text embedding and storage system that processes text document
   ```
 
 ## Usage
-Testing Text Splitting and Embedding:
- Run the text_split.py script to test text splitting and embedding functionality
+- Sending a POST request to the **/new** endpoint with the correct json payload will return generate embeddings for the text that are stored in the chroma database. It will then generate a summary of the text, along with a suggested title and some key topics (WIP)
  
 ## Testing the API
 Run the post.py script to test the API
-
+Testing Text Splitting and Embedding:
+  Run the text_split.py script to test text splitting and embedding functionality.
+ 
 
 ## Adding New Documents
 Send a POST request to the /new endpoint of the API with the following metadata:
