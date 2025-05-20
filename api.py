@@ -2,6 +2,8 @@ import random
 from flask import Flask, request
 from split import split_text
 from embed_and_store import add_documents
+from summarize import summarize
+import os
 
 app = Flask(__name__)
 
@@ -12,20 +14,28 @@ def handle_upload():
     notebook_id = body.get('notebook_id')
     doc_id = body.get('doc_id')
     text = body.get('text')
+    
 
     if not user_id or not notebook_id or not doc_id or not text:
         return { "error": 'Bad request' }, 400
-    
+    summary, key_topics, title = summarize(text)
     splits = split_text(text, user_id, doc_id, notebook_id)
     embedding_ids = add_documents(splits)
-
-    new_splits = []
-    for split in splits:
-        new_splits.append(split.page_content)
     
-    return {"splits": new_splits}
+    return {
+        "summary": summary,
+        "topics": key_topics,
+        "title": title
+    }, 200
+    
+#@app.route('/summarize', methods=['POST'])
+ #   def write_this_soon(text):
+  #  summary = summarize("This is a test")
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+     if os.environ.get('FLASK_ENV') == 'production':
+        print('Flask app ready for WSGI server in production')
+     else:
+        app.run(debug=True)
 

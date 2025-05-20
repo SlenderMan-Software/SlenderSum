@@ -1,5 +1,7 @@
-langchain_text_splitters
-langchain_core
 flask
-pysqlite3-binary
+gunicorn==23.0.0
 langchain_chroma
+langchain_core
+langchain_google_genai
+langchain_text_splitters
+pysqlite3-binary

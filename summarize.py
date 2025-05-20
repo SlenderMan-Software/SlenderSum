@@ -1,8 +1,17 @@
-import requests
+from dotenv import load_dotenv
+import re
+from langchain_google_genai import ChatGoogleGenerativeAI
+load_dotenv()
 import json
 
+def clean_json_output(raw_response):
+    # Strip markdown code fences (e.g., ```json ... ```)
+    cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw_response.strip(), flags=re.DOTALL)
+    return cleaned.strip()
 
-test_text = """Mr. Mendoza was a man whose presence alone was enough to send chills down the spines of his students. His bald head gleamed under the fluorescent lights of the classroom, a reflection that seemed to mirror the cold, unforgiving nature of his teaching methods. Every step he took echoed with authority, his polished shoes clicking against the tile floor like a metronome of doom. His gaze, sharp and piercing, seemed to penetrate straight into the souls of those unfortunate enough to cross him.
+
+test_text = """
+Mr. Mendoza was a man whose presence alone was enough to send chills down the spines of his students. His bald head gleamed under the fluorescent lights of the classroom, a reflection that seemed to mirror the cold, unforgiving nature of his teaching methods. Every step he took echoed with authority, his polished shoes clicking against the tile floor like a metronome of doom. His gaze, sharp and piercing, seemed to penetrate straight into the souls of those unfortunate enough to cross him.
 
 Rumors circulated through the hallways that Mr. Mendoza hadn’t always been this way. Some said he had once been a passionate, inspiring teacher who genuinely cared about his students. But something had changed. Whether it was years of dealing with ungrateful teenagers, the stress of the school system, or perhaps some deeper, unspoken darkness, no one knew for sure. What was certain, however, was that the Mr. Mendoza who now stood before his classes was a far cry from the teacher he once was.
 
@@ -24,25 +33,59 @@ But that brilliance came at a cost. It was as though Mr. Mendoza believed that t
 
 And so, year after year, students would enter his classroom with a mix of dread and curiosity. They had heard the stories, the whispered warnings passed down like ancient lore. They knew what awaited them, but they also knew that surviving Mr. Mendoza’s class meant emerging stronger, smarter, and perhaps a little more scarred. 
 
-For Mr. Mendoza, education wasn’t about nurturing — it was about hardening. And while his methods were cruel, there was no denying that those who endured them came out the other side forever changed."""
-shorter_text = """Mr. Mendoza was a man whose presence alone was enough to send chills down the spines of his students. His bald head gleamed under the fluorescent lights of the classroom, a reflection that seemed to mirror the cold, unforgiving nature of his teaching methods. Every step he took echoed with authority, his polished shoes clicking against the tile floor like a metronome of doom. His gaze, sharp and piercing, seemed to penetrate straight into the souls of those unfortunate enough to cross him.
+For Mr. Mendoza, education wasn’t about nurturing — it was about hardening. And while his methods were cruel, there was no denying that those who endured them came out the other side forever changed.
 
-Rumors circulated through the hallways that Mr. Mendoza hadn’t always been this way. Some said he had once been a passionate, inspiring teacher who genuinely cared about his students. But something had changed. Whether it was years of dealing with ungrateful teenagers, the stress of the school system, or perhaps some deeper, unspoken darkness, no one knew for sure. What was certain, however, was that the Mr. Mendoza who now stood before his classes was a far cry from the teacher he once was.
+"""
+def summarize(source):
+   #If you want to use the Gemini 2.0 model, uncomment the line below and comment out the one below it. Beware, it is slow albiet more cost effective.
+   # llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
+    prompt = [
+        ("system", 
+         """
+         You are an AI summarizer. Your task is to analyze a block of text and return a structured JSON object.
+You are a JSON-only summarizer.
 
-He ruled his classroom with an iron fist, his approach to discipline bordering on sadistic."""
+Strictly return ONLY a JSON object in this format and nothing else:
 
-base_url = "http://127.0.0.1:5000" 
-path = "/new"
-url = base_url + path
+{
+  "summary": "Your summary here.",
+  "key_topics": ["Topic A", "Topic B", "etc."],
+  "title": "Your title here"
+}
 
-data = { "text": shorter_text, "doc_id": "892", "user_id": "steve", "notebook_id": "123" }
-headers = {"Content-Type": "application/json"}
+Rules:
+- Do not include any introductory or explanatory text.
+- DO NOT use markdown or any other formatting!!!!! 
+- Ensure the JSON is syntactically valid (can be parsed by json.loads in Python).
+- Each topic in 'key_topics' should be a short phrase or keyword.
+- DO NOT explain anything.
+- DO NOT include markdown, commentary, or bullet points outside the JSON.
+- DO NOT write 'Here is the summary:' or anything before/after the JSON.
+- DO NOT use triple backticks or markdown code blocks.
+-GIVE RAW, UNFORMATTED JSON ONLY.
 
-response = requests.post(url, data=json.dumps(data), headers=headers)
+         
+         """
+         ),
+        ("human", source)
+    ]
+    response = llm.invoke(prompt)
+    try:
+        raw = response.content
+        cleaned = clean_json_output(raw)
+        parsed = json.loads(cleaned)
+        summary = parsed.get("summary")
+        key_topics = parsed.get("key_topics", [])
+        title = parsed.get("title")
+        #return parsed["summary"], parsed["key_topics"], parsed["title"]
+        return summary, key_topics, title
+    except json.JSONDecodeError:
+        print("❌ JSON decode error. Raw output was:")
+        print(response.content)
+        return None, [], None
 
-if response.status_code == 200:
-    print("Request successful!")
-    print(response.json())
-else:
-    print(f"Error: {response.status_code}")
-    print(response.text)
+    
+#For testing purposes:
+#print(summarize(test_text)) 
+
