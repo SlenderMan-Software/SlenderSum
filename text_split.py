@@ -1,7 +1,8 @@
+# Import necessary functions from other modules
 from split import split_text
 from embed_and_store import add_documents
 
-
+# Sample text to be processed
 test_text = """Mr. Mendoza was a man whose presence alone was enough to send chills down the spines of his students. His bald head gleamed under the fluorescent lights of the classroom, a reflection that seemed to mirror the cold, unforgiving nature of his teaching methods. Every step he took echoed with authority, his polished shoes clicking against the tile floor like a metronome of doom. His gaze, sharp and piercing, seemed to penetrate straight into the souls of those unfortunate enough to cross him.
 
 Rumors circulated through the hallways that Mr. Mendoza hadn’t always been this way. Some said he had once been a passionate, inspiring teacher who genuinely cared about his students. But something had changed. Whether it was years of dealing with ungrateful teenagers, the stress of the school system, or perhaps some deeper, unspoken darkness, no one knew for sure. What was certain, however, was that the Mr. Mendoza who now stood before his classes was a far cry from the teacher he once was.
@@ -26,13 +27,20 @@ And so, year after year, students would enter his classroom with a mix of dread 
 
 For Mr. Mendoza, education wasn’t about nurturing — it was about hardening. And while his methods were cruel, there was no denying that those who endured them came out the other side forever changed."""
 
+# Metadata for the document
+user_id = '321'  # ID of the user processing the document
+document_id = '12345'  # Unique ID for the document
 
-user_id = '321'
-document_id = '12345'
+# Split the text into smaller chunks using the split_text function
 splits = split_text(test_text, user_id, document_id)
+
+# Print the first 50 characters of each split along with its metadata
 for split in splits:
     print(split.page_content[:50], split.metadata)
 
+# Add the split documents to a vector database and retrieve their vector IDs
 vector_ids = add_documents(splits)
+
+# Print a separator and the resulting vector IDs
 print('---------------')
 print(vector_ids)

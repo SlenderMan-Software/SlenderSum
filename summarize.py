@@ -4,12 +4,13 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 load_dotenv()
 import json
 
+# Function to clean raw JSON output by removing markdown code fences
 def clean_json_output(raw_response):
     # Strip markdown code fences (e.g., ```json ... ```)
     cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw_response.strip(), flags=re.DOTALL)
     return cleaned.strip()
 
-
+# Sample text for testing summarization
 test_text = """
 Mr. Mendoza was a man whose presence alone was enough to send chills down the spines of his students. His bald head gleamed under the fluorescent lights of the classroom, a reflection that seemed to mirror the cold, unforgiving nature of his teaching methods. Every step he took echoed with authority, his polished shoes clicking against the tile floor like a metronome of doom. His gaze, sharp and piercing, seemed to penetrate straight into the souls of those unfortunate enough to cross him.
 
@@ -37,14 +38,16 @@ For Mr. Mendoza, education wasn’t about nurturing — it was about hardening. 
 
 """
 
-summaries = ["The Central Intelligence Agency (CIA) is a civilian foreign intelligence service of the U.S. government responsible for collecting and analyzing intelligence, conducting covert operations, and advancing national security.  Headquartered in Langley, Virginia, it's a key part of the U.S. Intelligence Community, reporting to the Director of National Intelligence.  The CIA's functions include human intelligence (HUMINT) coordination, support for foreign intelligence services, and paramilitary operations.  Its history includes involvement in numerous controversial events, such as coups in Iran, Guatemala, and Chile, and operations like MKUltra and CHAOS.  The agency has faced scrutiny for its use of torture, assassination, and other controversial tactics.", 
-'The M134 Minigun is a 7.62 mm six-barrel rotary machine gun with a high rate of fire (2,000-6,000 rounds per minute). It uses a Gatling-style rotating barrel assembly and an external power source, typically an electric motor.  The term "minigun" is often used more broadly to describe similar externally powered rotary guns.', 
-"Free France, led by Charles de Gaulle, was a government-in-exile established in London in 1940 after the Fall of France.  It opposed the Vichy French government and fought alongside the Allies against Axis forces, gaining support in several French colonies.  De Gaulle's Appeal of 18 June called for French resistance against Nazi Germany.", 
+# Sample summaries for testing metasum function
+summaries = [
+    "The Central Intelligence Agency (CIA) is a civilian foreign intelligence service of the U.S. government responsible for collecting and analyzing intelligence, conducting covert operations, and advancing national security.  Headquartered in Langley, Virginia, it's a key part of the U.S. Intelligence Community, reporting to the Director of National Intelligence.  The CIA's functions include human intelligence (HUMINT) coordination, support for foreign intelligence services, and paramilitary operations.  Its history includes involvement in numerous controversial events, such as coups in Iran, Guatemala, and Chile, and operations like MKUltra and CHAOS.  The agency has faced scrutiny for its use of torture, assassination, and other controversial tactics.", 
+    'The M134 Minigun is a 7.62 mm six-barrel rotary machine gun with a high rate of fire (2,000-6,000 rounds per minute). It uses a Gatling-style rotating barrel assembly and an external power source, typically an electric motor.  The term "minigun" is often used more broadly to describe similar externally powered rotary guns.', 
+    "Free France, led by Charles de Gaulle, was a government-in-exile established in London in 1940 after the Fall of France.  It opposed the Vichy French government and fought alongside the Allies against Axis forces, gaining support in several French colonies.  De Gaulle's Appeal of 18 June called for French resistance against Nazi Germany.", 
 ]
 
+# Function to summarize a single source text
 def summarize(source):
-   #If you want to use the Gemini 2.0 model, uncomment the line below and comment out the one below it. Beware, it is slow albiet more cost effective.
-   # llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash-lite")
+    # Initialize the language model with the desired configuration
     llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
     prompt = [
         ("system", 
@@ -76,25 +79,26 @@ Rules:
          ),
         ("human", source)
     ]
+    # Invoke the language model with the prompt
     response = llm.invoke(prompt)
     try:
+        # Clean and parse the JSON response
         raw = response.content
         cleaned = clean_json_output(raw)
         parsed = json.loads(cleaned)
         summary = parsed.get("summary")
         key_topics = parsed.get("key_topics", [])
         title = parsed.get("title")
-        #return parsed["summary"], parsed["key_topics"], parsed["title"]
         return summary, key_topics, title
     except json.JSONDecodeError:
+        # Handle JSON parsing errors
         print("❌ JSON decode error. Raw output was:")
         print(response.content)
         return None, [], None
 
-
-
-
+# Function to summarize multiple sources into a single meta-summary
 def metasum(sources):
+    # Initialize the language model with the desired configuration
     llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash")
 
     prompt = [
@@ -124,21 +128,21 @@ Rules:
          ),
         ("human", sources)
     ]
+    # Invoke the language model with the prompt
     response = llm.invoke(prompt)
     try:
+        # Clean and parse the JSON response
         raw = response.content
         cleaned = clean_json_output(raw)
         parsed = json.loads(cleaned)
         summary = parsed.get("summary")
-        #return parsed["summary"], parsed["key_topics"], parsed["title"]
         return { "summary": summary }
     except json.JSONDecodeError:
+        # Handle JSON parsing errors
         print("❌ JSON decode error. Raw output was:")
         print(response.content)
         return None
 
-
-#For testing purposes:
-#print(metasum(summaries)) 
+# For testing purposes:
+# print(metasum(summaries)) 
 metasum(summaries)
-
