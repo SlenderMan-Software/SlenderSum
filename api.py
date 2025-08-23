@@ -5,7 +5,7 @@ from embed_and_store import add_documents
 from summarize import summarize, metasum
 from manage_documents import delete_docs, list_docs
 import os
-from emergency_delete import burn_evidence, burn_everything
+
 
 app = Flask(__name__)
 
@@ -77,17 +77,7 @@ def handle_reupload():
 
     return metasummary, 200
 
-# Endpoint to burn evidence (delete sensitive data)
-@app.route('/burn evidence', methods=['POST'])
-def destroy():
-    burn_evidence()
-    return { "success": "Evidence burned" }
 
-# Endpoint to burn everything (delete all data)
-@app.route('/burn everything', methods=['POST'])
-def destroy_all():
-    burn_everything()
-    return { "success": "Everything burned" }
 
 # Entry point for the Flask application
 if __name__ == '__main__':
