@@ -26,7 +26,7 @@ This project is a text embedding and storage system that processes text document
 ## Setup
 - **Automatic**
   - To install automatically, download the installer for your operating system, run it, and provide your API key.
--**Manual**
+- **Manual**
 - Clone this repository using
   ```sh
   git clone https://github.com/GrinchBob43/SlenderSum.git
