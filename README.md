@@ -22,7 +22,7 @@ This project is a text embedding and storage system that processes text document
 - **`post.py`**: A script for testing the API by sending a sample document.
 - **`summarize.py`**: Contains function for sending summary, title, and key-topics request to Gemini, parses them for API.
 ## Downloads
-Get the latest release from [Releases](https://github.com/GrinchBob43/SlenderSum/releases).
+Get the latest release from [Releases](https://github.com/SlenderMan-Software/SlenderSum/releases).
 
 
 ## Setup
