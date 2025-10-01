@@ -21,6 +21,8 @@ This project is a text embedding and storage system that processes text document
 - **`text_split.py`**: A script for testing text splitting and embedding functionality.
 - **`post.py`**: A script for testing the API by sending a sample document.
 - **`summarize.py`**: Contains function for sending summary, title, and key-topics request to Gemini, parses them for API.
+## Downloads
+Get the latest release from [Releases](https://github.com/GrinchBob43/SlenderSum/releases).
 
 
 ## Setup
