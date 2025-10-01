@@ -40,7 +40,7 @@ This project is a text embedding and storage system that processes text document
   Then use ```Ctrl + X``` to exit and save
 - Install dependencies with:
   ```sh
-  pip install requirements.txt
+  pip install -r requirements.txt
   ```
 - Run the API with
   ```sh
